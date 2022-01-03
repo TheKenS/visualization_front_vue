@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+// import { mapState } from 'vuex'
 export default {
   data () {
     return {
@@ -19,28 +19,28 @@ export default {
   },
   created () {
     // 在组件创建完成之后 进行回调函数的注册
-    this.$socket.registerCallBack('rankData', this.getData)
+    // this.$socket.registerCallBack('rankData', this.getData)
   },
   mounted () {
     this.initChart()
-    // this.getData()
-    this.$socket.send({
-      action: 'getData',
-      socketType: 'rankData',
-      chartName: 'rank',
-      value: ''
-    })
+    this.getData()
+    // this.$socket.send({
+    //   action: 'getData',
+    //   socketType: 'rankData',
+    //   chartName: 'rank',
+    //   value: ''
+    // })
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
   destroyed () {
     window.removeEventListener('resize', this.screenAdapter)
     clearInterval(this.timerId)
-    this.$socket.unRegisterCallBack('rankData')
+    // this.$socket.unRegisterCallBack('rankData')
   },
   methods: {
     initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.rank_ref, this.theme)
+      this.chartInstance = this.$echarts.init(this.$refs.rank_ref, 'chalk')
       const initOption = {
         title: {
           text: '▎ 地区销售排行',
@@ -77,9 +77,9 @@ export default {
         this.startInterval()
       })
     },
-    getData (ret) {
+    async getData () {
       // 获取服务器的数据, 对this.allData进行赋值之后, 调用updateChart方法更新图表
-      // const { data: ret } = await this.$http.get('rank')
+      const { data: ret } = await this.$http.get('rank')
       this.allData = ret
       // 对allData里面的每一个元素进行排序, 从大到小进行
       this.allData.sort((a, b) => {
@@ -179,7 +179,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['theme'])
+    // ...mapState(['theme'])
   },
   watch: {
     theme () {

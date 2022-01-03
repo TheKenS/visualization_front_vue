@@ -14,12 +14,12 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+// import { mapState } from 'vuex'
 import { getThemeValue } from '@/utils/theme_utils'
 export default {
   data () {
     return {
-      chartInstane: null,
+      chartInstance: null,
       allData: null, // 从服务器中获取的所有数据
       showChoice: false, // 是否显示可选项
       choiceType: 'map', // 显示的数据类型
@@ -28,25 +28,25 @@ export default {
   },
   created () {
     // 在组件创建完成之后 进行回调函数的注册
-    this.$socket.registerCallBack('trendData', this.getData)
+    // this.$socket.registerCallBack('trendData', this.getData)
   },
   mounted () {
     this.initChart()
-    // this.getData()
+    this.getData()
     // 发送数据给服务器, 告诉服务器, 我现在需要数据
-    this.$socket.send({
-      action: 'getData',
-      socketType: 'trendData',
-      chartName: 'trend',
-      value: ''
-    })
+    // this.$socket.send({
+    //   action: 'getData',
+    //   socketType: 'trendData',
+    //   chartName: 'trend',
+    //   value: ''
+    // })
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
   destroyed () {
     window.removeEventListener('resize', this.screenAdapter)
     // 在组件销毁的时候, 进行回调函数的取消
-    this.$socket.unRegisterCallBack('trendData')
+    // this.$socket.unRegisterCallBack('trendData')
   },
   computed: {
     selectTypes () {
@@ -69,19 +69,19 @@ export default {
     comStyle () {
       return {
         fontSize: this.titleFontSize + 'px',
-        color: getThemeValue(this.theme).titleColor
+        color: getThemeValue('chalk').titleColor
       }
     },
     marginStyle () {
       return {
         marginLeft: this.titleFontSize + 'px'
       }
-    },
-    ...mapState(['theme'])
+    }
+    // ...mapState(['theme'])
   },
   methods: {
     initChart () {
-      this.chartInstane = this.$echarts.init(this.$refs.trend_ref, this.theme)
+      this.chartInstance = this.$echarts.init(this.$refs.trend_ref, 'chalk')
       const initOption = {
         grid: {
           left: '3%',
@@ -106,13 +106,12 @@ export default {
           type: 'value'
         }
       }
-      this.chartInstane.setOption(initOption)
+      this.chartInstance.setOption(initOption)
     },
     // ret 就是服务端发送给客户端的图表的数据
-    getData (ret) {
-      // await this.$http.get()
+    async getData () {
       // 对allData进行赋值
-      // const { data: ret } = await this.$http.get('trend')
+      const { data: ret } = await this.$http.get('trend')
       this.allData = ret
       console.log(this.allData)
       this.updateChart()
@@ -172,7 +171,7 @@ export default {
         },
         series: seriesArr
       }
-      this.chartInstane.setOption(dataOption)
+      this.chartInstance.setOption(dataOption)
     },
     screenAdapter () {
       this.titleFontSize = this.$refs.trend_ref.offsetWidth / 100 * 3.6
@@ -186,8 +185,8 @@ export default {
           }
         }
       }
-      this.chartInstane.setOption(adapterOption)
-      this.chartInstane.resize()
+      this.chartInstance.setOption(adapterOption)
+      this.chartInstance.resize()
     },
     handleSelect (currentType) {
       this.choiceType = currentType
@@ -198,7 +197,7 @@ export default {
   watch: {
     theme () {
       console.log('主题切换了')
-      this.chartInstane.dispose() // 销毁当前的图表
+      this.chartInstance.dispose() // 销毁当前的图表
       this.initChart() // 重新以最新的主题名称初始化图表对象
       this.screenAdapter() // 完成屏幕的适配
       this.updateChart() // 更新图表的展示

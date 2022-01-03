@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+// import { mapState } from 'vuex'
 export default {
   data () {
     return {
@@ -18,28 +18,28 @@ export default {
   },
   created () {
     // 在组件创建完成之后 进行回调函数的注册
-    this.$socket.registerCallBack('stockData', this.getData)
+    // this.$socket.registerCallBack('stockData', this.getData)
   },
   mounted () {
     this.initChart()
-    // this.getData()
-    this.$socket.send({
-      action: 'getData',
-      socketType: 'stockData',
-      chartName: 'stock',
-      value: ''
-    })
+    this.getData()
+    // this.$socket.send({
+    //   action: 'getData',
+    //   socketType: 'stockData',
+    //   chartName: 'stock',
+    //   value: ''
+    // })
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
   destroyed () {
     window.removeEventListener('resize', this.screenAdapter)
     clearInterval(this.timerId)
-    this.$socket.unRegisterCallBack('stockData')
+    // this.$socket.unRegisterCallBack('stockData')
   },
   methods: {
     initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.stock_ref, this.theme)
+      this.chartInstance = this.$echarts.init(this.$refs.stock_ref, 'chalk')
       const initOption = {
         title: {
           text: '▎库存和销量分析',
@@ -55,9 +55,9 @@ export default {
         this.startInterval()
       })
     },
-    getData (ret) {
+    async getData () {
       // 获取服务器的数据, 对this.allData进行赋值之后, 调用updateChart方法更新图表
-      // const { data: ret } = await this.$http.get('stock')
+      const { data: ret } = await this.$http.get('stock')
       this.allData = ret
       console.log(this.allData)
       this.updateChart()
@@ -190,7 +190,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['theme'])
+    // ...mapState(['theme'])
   },
   watch: {
     theme () {

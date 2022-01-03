@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+// import { mapState } from 'vuex'
 import { getThemeValue } from '@/utils/theme_utils'
 export default {
   data () {
@@ -22,7 +22,7 @@ export default {
   },
   created () {
     // 在组件创建完成之后 进行回调函数的注册
-    this.$socket.registerCallBack('hotData', this.getData)
+    // this.$socket.registerCallBack('hotData', this.getData)
   },
   computed: {
     catName () {
@@ -35,30 +35,30 @@ export default {
     comStyle () {
       return {
         fontSize: this.titleFontSize + 'px',
-        color: getThemeValue(this.theme).titleColor
+        color: getThemeValue('chalk').titleColor
       }
-    },
-    ...mapState(['theme'])
+    }
+    // ...mapState(['theme'])
   },
   mounted () {
     this.initChart()
-    // this.getData()
-    this.$socket.send({
-      action: 'getData',
-      socketType: 'hotData',
-      chartName: 'hot',
-      value: ''
-    })
+    this.getData()
+    // this.$socket.send({
+    //   action: 'getData',
+    //   socketType: 'hotData',
+    //   chartName: 'hot',
+    //   value: ''
+    // })
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
   destroyed () {
     window.removeEventListener('resize', this.screenAdapter)
-    this.$socket.unRegisterCallBack('hotData')
+    // this.$socket.unRegisterCallBack('hotData')
   },
   methods: {
     initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.hot_ref, this.theme)
+      this.chartInstance = this.$echarts.init(this.$refs.hot_ref, 'chalk')
       const initOption = {
         title: {
           text: '▎ 热销商品的占比',
@@ -108,9 +108,9 @@ export default {
       }
       this.chartInstance.setOption(initOption)
     },
-    getData (ret) {
+    async getData () {
       // 获取服务器的数据, 对this.allData进行赋值之后, 调用updateChart方法更新图表
-      // const { data: ret } = await this.$http.get('hotproduct')
+      const { data: ret } = await this.$http.get('hot')
       this.allData = ret
       console.log(this.allData)
       this.updateChart()

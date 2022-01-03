@@ -19,17 +19,17 @@ export default {
   },
   created () {
     // 在组件创建完成之后 进行回调函数的注册
-    this.$socket.registerCallBack('sellerData', this.getData)
+    // this.$socket.registerCallBack('sellerData', this.getData)
   },
   mounted () {
     this.initChart()
-    // this.getData()
-    this.$socket.send({
-      action: 'getData',
-      socketType: 'sellerData',
-      chartName: 'seller',
-      value: ''
-    })
+    this.getData()
+    // this.$socket.send({
+    //   action: 'getData',
+    //   socketType: 'sellerData',
+    //   chartName: 'seller',
+    //   value: ''
+    // })
     window.addEventListener('resize', this.screenAdapter)
     // 在页面加载完成的时候, 主动进行屏幕的适配
     this.screenAdapter()
@@ -38,12 +38,12 @@ export default {
     clearInterval(this.timerId)
     // 在组件销毁的时候, 需要将监听器取消掉
     window.removeEventListener('resize', this.screenAdapter)
-    this.$socket.unRegisterCallBack('sellerData')
+    // this.$socket.unRegisterCallBack('sellerData')
   },
   methods: {
     // 初始化echartInstance对象
     initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.seller_ref, this.theme)
+      this.chartInstance = this.$echarts.init(this.$refs.seller_ref, 'chalk')
       // 对图表初始化配置的控制
       const initOption = {
         title: {
@@ -113,9 +113,9 @@ export default {
       })
     },
     // 获取服务器的数据
-    getData (ret) {
+    async getData () {
       // http://127.0.0.1:8888/api/seller
-      // const { data: ret } = await this.$http.get('seller')
+      const { data: ret } = await this.$http.get('seller')
       this.allData = ret
       // 对数据排序
       this.allData.sort((a, b) => {
